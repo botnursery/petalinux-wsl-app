@@ -1,0 +1,3 @@
+[submodule "wsltest"]
+	path = wsltest
+	url = https://github.com/botnursery/petalinux-wsl-test.git
