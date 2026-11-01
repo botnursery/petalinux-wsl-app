@@ -1,0 +1,709 @@
+Petalinux on Windows (via WSL and Git)
+Posted on February 4, 2021 by Thom
+https://doayee.co.uk/petalinux-on-windows-via-wsl-and-git/
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+++++++++++++++++ Part 1 - Petalinux and WSL
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+++++++++++++++++ Step 1: Install WSL as Ubuntu
+Updated botnursery
+for PetaLinux 2022.2_release_S10071807
+for WSL Ubuntu 20.04 LTS (GNU/Linux 5.15.133.1-microsoft-standard-WSL2 x86_64)
+for board support EBAZ4205
+https://github.com/botnursery/EBAZ4205-Minimum-Board-Operating-Configuration.git
+for Vitis IDE 2022.2
+
+++++++++++++++++ Step 2: Configure your WSL
+dash@DASH:~$ sudo ln -s /mnt/c/Users/botnu/Downloads ~/WinDownloads
+dash@DASH:~$ sudo dpkg --add-architecture i386 # потом надо apt update && sudo apt upgrade
+dash@DASH:~$ sudo apt-get update
+sudo ln -s /mnt/c/Work/Xilinx/xProjects ~/Vivado
+
+---------------------------------------------------------------------------------------------------
+sudo apt-get install -y gcc git make net-tools libncursesw5-dev tftpd zlib1g-dev libssl-dev flex bison libselinux1 gnupg wget diffstat chrpath socat xterm autoconf libtool tar unzip texinfo gcc-multilib build-essential libsdl1.2-dev libglib2.0-dev zlib1g:i386 screen pax gzip gawk glibc-doc:i386 locales:i386 ncurses-dev qemu-system-arm:i386 ncurses-dev:i386 libstdc++6:i386 libselinux1:i386 lib32ncurses5-dev
+
+This command is a comprehensive installation instruction for various development tools and libraries, often used for building and debugging embedded Linux systems, particularly those targeting ARM architectures. Let's break it down:
+
+* **`sudo apt-get install`**: This is the core command.
+    * `sudo` grants administrator privileges, necessary for installing software system-wide.
+    * `apt-get` is a command-line tool for handling packages in Debian-based Linux distributions like Ubuntu.
+    * `install` specifies that packages should be installed.
+* **`-y`**: This option automatically answers "yes" to all prompts, preventing the installation from pausing for user confirmation.
+* **The list of packages:** This long list specifies the software packages to be installed. Here's a breakdown of what each package is for:
+
+    * **`gcc`**: The GNU Compiler Collection, essential for compiling C and C++ code.
+    * **`git`**: A version control system for managing source code.
+    * **`make`**: A build automation tool for compiling software from source code.
+    * **`net-tools`**: Provides basic networking utilities like `ifconfig` and `netstat`.
+    * **`libncursesw5-dev`**: Development files for the ncurses library, used for creating text-based user interfaces with wide character support.
+    * **`tftpd`**: Trivial File Transfer Protocol daemon, used for transferring files over a local network, often used for booting embedded systems.
+    * **`zlib1g-dev`**: Development files for the zlib compression library.
+    * **`libssl-dev`**: Development files for the OpenSSL library, used for secure communication.
+    * **`flex`**: A fast lexical analyzer generator.
+    * **`bison`**: A parser generator, used for creating compilers and interpreters.
+    * **`libselinux1`**: SELinux runtime libraries.
+    * **`gnupg`**: GNU Privacy Guard, for encryption and digital signatures.
+    * **`wget`**: A command-line utility for downloading files from the internet.
+    * **`diffstat`**: Displays a histogram of the differences between files.
+    * **`chrpath`**: Modifies the runtime search path of executables.
+    * **`socat`**: A versatile relay for bidirectional data transfer.
+    * **`xterm`**: A terminal emulator for the X Window System.
+    * **`autoconf`**: A tool for producing shell scripts to automatically configure software source code packages.
+    * **`libtool`**: A generic library support script.
+    * **`tar`**: A tool for archiving files.
+    * **`unzip`**: A tool for extracting files from ZIP archives.
+    * **`texinfo`**: A documentation system for producing online and printed documentation.
+    * **`gcc-multilib`**: Cross compiler support, allowing the system to compile code for multiple architectures.
+    * **`build-essential`**: A package containing essential tools for compiling software, including `gcc`, `g++`, and `make`.
+    * **`libsdl1.2-dev`**: Development files for the Simple DirectMedia Layer library, used for multimedia applications.
+    * **`libglib2.0-dev`**: Development files for the GLib library, a general-purpose utility library.
+    * **`zlib1g:i386`**, **`locales:i386`**, **`ncurses-dev:i386`**, **`qemu-system-arm:i386`**, **`libstdc++6:i386`**, **`libselinux1:i386`**, and **`lib32ncurses5-dev`**: These packages provide 32-bit versions of the specified libraries, often needed for cross-compiling or running 32-bit applications on a 64-bit system.
+    * **`screen`**: A terminal multiplexer, allowing multiple terminal sessions within a single window.
+    * **`pax`**: Portable Archive Interchange.
+    * **`gzip`**: A compression utility.
+    * **`gawk`**: The GNU version of awk, a text processing tool.
+    * **`glibc-doc:i386`**: 32 bit version of the GNU C library documentation.
+    * **`ncurses-dev`**: Development files for the ncurses library.
+
+In essence, this command installs a comprehensive set of tools and libraries required for various development tasks, especially those involving cross-compilation for ARM architectures and embedded systems.
+---------------------------------------------------------------------------------------------------
+
+++++++++++++++++ Step 3: Download Petalinux
+https://www.xilinx.com/support/download/index.html/content/xilinx/en/downloadNav/embedded-design-tools/archive.html
+
+++++++++++++++++ Step 4: Copy it to WSL
+cd ~
+mkdir petalinux
+cp WinDownloads/petalinux-v2022.2-10141622-installer.run petalinux
+
+++++++++++++++++ Step 5: Run it
+cd petalinux
+
+dash@DASH:~/petalinux$ ./petalinux-v2022.2-10141622-installer.run
+INFO: Checking installation environment requirements...
+INFO: Checking free disk space
+INFO: Checking installed tools
+ERROR: You are missing the following system tools required by PetaLinux:
+
+ - netstat
+ - xterm
+ - autoconf
+ - libtool
+ - texinfo
+ - zlib1g-dev
+ - gcc-multilib
+ - build-essential
+Please check PetaLinux installation guide - required tools and libraries package section for detailed information
+
+INFO: Checking installed development libraries
+ERROR: You are missing these development libraries required by PetaLinux:
+
+ - zlib
+ - ncurses
+ - zlib1g:i386
+
+Please install them with your operating system package manager, and try again
+WARNING: Please install required packages.
+Please refer to the PetaLinux Tools Installation Guide.
+Check the troubleshooting guide at the end of that manual, and if you are
+unable to resolve the issue please contact customer support with file:
+   /home/dash/petalinux/petalinux_installation_log
+
+---------------------------------------------------------------------------------------------------
+dash@DASH:~/petalinux$ sudo apt-get install -y gcc
+sudo apt-get install -y net-tools
+sudo apt install xterm
+sudo apt install autoconf
+sudo apt install libtool-bin
+
+dash@DASH:~$ sudo apt install texinfo
+dash@DASH:~$ sudo apt install zlib1g-dev
+dash@DASH:~$ sudo apt install gcc-multilib
+dash@DASH:~$ sudo apt install build-essential
+
+dash@DASH:~/petalinux$ sudo apt install zlib1g:i386
+sudo apt-get install libncurses5-dev libncursesw5-dev
+
+---------------------------------------------------------------------------------------------------
+dash@DASH:~/petalinux$ ./petalinux-v2022.2-10141622-installer.run
+INFO: Checking installation environment requirements...
+INFO: Checking free disk space
+INFO: Checking installed tools
+INFO: Checking installed development libraries
+INFO: Checking network and other services
+WARNING: No tftp server found - please refer to "UG1144  PetaLinux Tools Documentation Reference Guide" for its impact and solution
+INFO: Checking installer checksum...
+INFO: Extracting PetaLinux installer...
+
+LICENSE AGREEMENTS
+
+PetaLinux SDK contains software from a number of sources.  Please review
+the following licenses and indicate your acceptance of each to continue.
+
+You do not have to accept the licenses, however if you do not then you may
+not use PetaLinux SDK.
+
+Use PgUp/PgDn to navigate the license viewer, and press 'q' to close
+
+Press Enter to display the license agreements
+Do you accept Xilinx End User License Agreement? [y/N] > y
+Do you accept Third Party End User License Agreement? [y/N] > y
+INFO: Installing PetaLinux...
+*********************************************
+WARNING: You haven't specified the installation location.
+*********************************************
+*********************************************
+WARNING: By default, it will be installed in your working directory: /home/dash/petalinux
+*********************************************
+Please input "y" to proceed the installation, "n" to exit otherwise:y
+*********************************************
+WARNING: PetaLinux installation directory: /home/dash/petalinux/. is not empty!
+*********************************************
+Please input "y" to continue to install PetaLinux in that directory?[n]y
+INFO: Checking PetaLinux installer integrity...
+INFO: Installing PetaLinux SDK to "/home/dash/petalinux/."
+INFO: Installing buildtools in /home/dash/petalinux/./components/yocto/buildtools
+INFO: Installing buildtools-extended in /home/dash/petalinux/./components/yocto/buildtools_extended
+INFO: PetaLinux SDK has been installed to /home/dash/petalinux/.
+---------------------------------------------------------------------------------------------------
+
+++++++++++++++++ Step 6: Edit some language parameters because yes this is necessary
+sudo dpkg-reconfigure locales
+sudo update-locale LANG=en_US.UTF-8
+
+++++++++++++++++ Step 7: Source the petalinux tools
+!!!!!!!!!!!!!!!! You need to do this every time you boot WSL, or add it to your .bashrc
+dash@DASH:~/petalinux$ source ~/petalinux/settings.sh
+PetaLinux environment set to '/home/dash/petalinux'
+WARNING: /bin/sh is not bash!
+bash is PetaLinux recommended shell. Please set your default shell to bash.
+INFO: Checking free disk space
+INFO: Checking installed tools
+INFO: Checking installed development libraries
+INFO: Checking network and other services
+WARNING: No tftp server found - please refer to "UG1144 2022.2 PetaLinux Tools Documentation Reference Guide" for its impact and solution
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+++++++++++++++++ Part 2 – Creating and building a petalinux project
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+++++++++++++++++ Step 1: Create a project directory
+cd ~/petalinux
+mkdir projects
+
+++++++++++++++++ Step 2: Create the project
+# use the zynq template, but you can use a bsp or another template here
+cd projects
+petalinux-create --type project --name wsltest --template zynq
+
+++++++++++++++++ Step 3: Perform the project config
+# inside project catalog "wsltest"
+# don’t need to change any settings here
+# project_pynqtest ---> project_zynq7000_ebaz4205
+---------------------------------------------------------------------------------------------------
+dash@DASH:~/petalinux/projects/wsltest$ petalinux-config --get-hw-description ~/Vivado/project_pynqtest
+[INFO] Sourcing buildtools
+INFO: Getting hardware description...
+ERROR: No XSA is found in /mnt/c/Work/Xilinx/xProjects/project_pynqtest.
+ERROR: Please use --get-hw-description=<VIVADO_SDK_EXPORT_DIR> to specify the location of Vivado export to SDK directory
+
+dash@DASH:~/petalinux/projects/wsltest$ petalinux-config --get-hw-description ~/Vivado/project_pynqtest
+[INFO] Sourcing buildtools
+INFO: Getting hardware description...
+INFO: Renaming design_1_wrapper.xsa to system.xsa
+[INFO] Generating Kconfig for project
+ERROR: Failed to generate /home/dash/petalinux/projects/wsltest/build/misc/config/Kconfig.syshw
+ERROR: Failed to Kconfig project
+ERROR: Failed to generate System hardware Kconfig file.
+
+# needs one more packet!!!
+https://adaptivesupport.amd.com/s/question/0D52E00006hptRhSAI/petalinux-error-failed-to-generate-kconfigsyshw?language=en_US
+sudo apt-get install libtinfo5
+
+dash@DASH:~/petalinux/projects/wsltest$ petalinux-config --get-hw-description ~/Vivado/project_zynq7000_ebaz4205
+[INFO] Sourcing buildtools
+INFO: Getting hardware description...
+[INFO] Generating Kconfig for project
+[INFO] Menuconfig project
+configuration written to /home/dash/petalinux/projects/wsltest/project-spec/configs/config
+
+*** End of the configuration.
+*** Execute 'make' to start the build or try 'make help'.
+
+[INFO] Extracting yocto SDK to components/yocto. This may take time!
+[INFO] Sourcing build environment
+[INFO] Generating kconfig for Rootfs
+[INFO] Silentconfig rootfs
+[INFO] Generating plnxtool conf
+[INFO] Adding user layers
+[INFO] Generating workspace directory
+---------------------------------------------------------------------------------------------------
+
+++++++++++++++++ Step 4: Configure what’s actually on your linux build
+dash@DASH:~/petalinux/projects/wsltest$ petalinux-config -c rootfs
+
+# Changed settings, then save and exit
+Filesystem Packages -> console -> network -> dropbear # Ok
+Filesystem Packages -> devel -> Python # ---> filesystem -> misc -> python3
+Apps -> gpio demo # ---> user packages -> gpio-demo
+
+++++++++++++++++ Step 5: Build the project
+dash@DASH:~/petalinux/projects/wsltest$ petalinux-build
+[INFO] Sourcing buildtools
+[INFO] Building project
+[INFO] Sourcing build environment
+[INFO] Generating workspace directory
+INFO: bitbake petalinux-image-minimal
+NOTE: Started PRServer with DBfile: /home/dash/petalinux/projects/wsltest/build/cache/prserv.sqlite3, Address: 127.0.0.1:36941, PID: 4770
+WARNING: You are running bitbake under WSLv2, this works properly but you should optimize your VHDX file eventually to avoid running out of storage space
+Loading cache: 100% |                                                                                   | ETA:  --:--:--
+Loaded 0 entries from dependency cache.
+Parsing recipes: 100% |######################################################################################################################| Time: 0:02:20
+Parsing of 4461 .bb files complete (0 cached, 4461 parsed). 6497 targets, 627 skipped, 1 masked, 0 errors.
+NOTE: Resolving any missing task queue dependencies
+NOTE: Fetching uninative binary shim file:///home/dash/petalinux/projects/wsltest/components/yocto/downloads/uninative/126f4f7f6f21084ee140dac3eb4c536b963837826b7c38599db0b512c3377ba2/x86_64-nativesdk-libc-3.4.tar.xz;sha256sum=126f4f7f6f21084ee140dac3eb4c536b963837826b7c38599db0b512c3377ba2 (will check PREMIRRORS first)
+Initialising tasks: 100% |###################################################################################################################| Time: 0:00:08
+Checking sstate mirror object availability: 100% |###########################################################################################| Time: 0:00:49
+Sstate summary: Wanted 1591 Local 0 Network 1368 Missed 223 Current 0 (85% match, 0% complete)
+NOTE: Executing Tasks
+ERROR: device-tree-xilinx-v2022.2+gitAUTOINC+24d29888d0-r0 do_compile: Error executing a python function in exec_func_python() autogenerated:
+
+The stack trace of python calls that resulted in this exception/failure was:
+File: 'exec_func_python() autogenerated', lineno: 2, function: <module>
+     0001:
+ *** 0002:devicetree_do_compile(d)
+     0003:
+File: '/home/dash/petalinux/projects/wsltest/components/yocto/layers/core/meta/classes/devicetree.bbclass', lineno: 131, function: devicetree_do_compile
+     0127:            if not(os.path.isfile(dtspath)) or not(dts.endswith(".dts") or devicetree_source_is_overlay(dtspath)):
+     0128:                continue # skip non-.dts files and non-overlay files
+     0129:        except:
+     0130:            continue # skip if can't determine if overlay
+ *** 0131:        devicetree_compile(dtspath, includes, d)
+     0132:}
+     0133:
+     0134:devicetree_do_install() {
+     0135:    for DTB_FILE in `ls *.dtb *.dtbo`; do
+File: '/home/dash/petalinux/projects/wsltest/components/yocto/layers/core/meta/classes/devicetree.bbclass', lineno: 119, function: devicetree_compile
+     0115:        dtcargs += ["-i", i]
+     0116:    dtcargs += ["-o", "{0}.{1}".format(dtname, "dtbo" if isoverlay else "dtb")]
+     0117:    dtcargs += ["-I", "dts", "-O", "dtb", "{0}.pp".format(dts)]
+     0118:    bb.note("Running {0}".format(" ".join(dtcargs)))
+ *** 0119:    subprocess.run(dtcargs, check = True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+     0120:
+     0121:python devicetree_do_compile() {
+     0122:    includes = expand_includes("DT_INCLUDE", d)
+     0123:    listpath = d.getVar("DT_FILES_PATH")
+File: '/home/dash/petalinux/components/yocto/buildtools/sysroots/x86_64-petalinux-linux/usr/lib/python3.9/subprocess.py', lineno: 528, function: run
+     0524:            # We don't call process.wait() as .__exit__ does that for us.
+     0525:            raise
+     0526:        retcode = process.poll()
+     0527:        if check and retcode:
+ *** 0528:            raise CalledProcessError(retcode, process.args,
+     0529:                                     output=stdout, stderr=stderr)
+     0530:    return CompletedProcess(process.args, retcode, stdout, stderr)
+     0531:
+     0532:
+Exception: subprocess.CalledProcessError: Command '['dtc', '-@', '-p', '0x1000', '-@', '-i', '/home/dash/petalinux/projects/wsltest/build/tmp/work/zynq_generic-xilinx-linux-gnueabi/device-tree/xilinx-v2022.2+gitAUTOINC+24d29888d0-r0', '-i', '/home/dash/petalinux/projects/wsltest/project-spec/configs/../../components/plnx_workspace/device-tree/device-tree', '-i', '/home/dash/petalinux/projects/wsltest/build/tmp/work-shared/zynq-generic/kernel-source/arch/arm/boot/dts', '-i', '/home/dash/petalinux/projects/wsltest/build/tmp/work-shared/zynq-generic/kernel-source/scripts/dtc/include-prefixes', '-i', '/home/dash/petalinux/projects/wsltest/build/tmp/work/zynq_generic-xilinx-linux-gnueabi/device-tree/xilinx-v2022.2+gitAUTOINC+24d29888d0-r0/git/device_tree/data/kernel_dtsi/2022.2/BOARD/', '-o', 'system-top.dtb', '-I', 'dts', '-O', 'dtb', 'system-top.dts.pp']' returned non-zero exit status 1.
+
+Subprocess output:
+Error: /home/dash/petalinux/projects/wsltest/project-spec/configs/../../components/plnx_workspace/device-tree/device-tree/system-conf.dtsi:18.1-12 Label or path ps7_nand_0 not found
+FATAL ERROR: Syntax error parsing input tree
+
+ERROR: Logfile of failure stored in: /home/dash/petalinux/projects/wsltest/build/tmp/work/zynq_generic-xilinx-linux-gnueabi/device-tree/xilinx-v2022.2+gitAUTOINC+24d29888d0-r0/temp/log.do_compile.9584
+ERROR: Task (/home/dash/petalinux/projects/wsltest/components/yocto/layers/meta-xilinx/meta-xilinx-core/recipes-bsp/device-tree/device-tree.bb:do_compile) failed with exit code '1'
+NOTE: Tasks Summary: Attempted 4177 tasks of which 3742 didn't need to be rerun and 1 failed.
+
+Summary: 1 task failed:
+  /home/dash/petalinux/projects/wsltest/components/yocto/layers/meta-xilinx/meta-xilinx-core/recipes-bsp/device-tree/device-tree.bb:do_compile
+Summary: There was 1 WARNING message shown.
+Summary: There was 1 ERROR message shown, returning a non-zero exit code.
+ERROR: Failed to build project. Check the /home/dash/petalinux/projects/wsltest/build/build.log file for more details...
+---------------------------------------------------------------------------------------------------
+# ~/petalinux/projects/wsltest/components/plnx_workspace/device-tree/device-tree/system-conf.dtsi
+# no need commented out in ----> system-conf.dtsi.nonand
+# Error executing a python function ---> set python3 in config rootfs
+---------------------------------------------------------------------------------------------------
+# pl-custom.dtsi and system-user.dtsi ---> <project>/project-spec/meta-user/recipes-bsp/device-tree/files/ 
+# compiled device tree blob (i.e. .dtb) ---> <project>/images/linux/system.dtb
+dash@DASH:~/petalinux/projects/wsltest/images/linux$ sudo apt install device-tree-compiler
+Reading package lists... Done
+Building dependency tree
+Reading state information... Done
+The following additional packages will be installed:
+  libfdt1
+The following NEW packages will be installed:
+  device-tree-compiler libfdt1
+0 upgraded, 2 newly installed, 0 to remove and 324 not upgraded.
+Need to get 265 kB of archives.
+After this operation, 559 kB of additional disk space will be used.
+Do you want to continue? [Y/n] y
+Get:1 http://archive.ubuntu.com/ubuntu focal/main amd64 libfdt1 amd64 1.5.1-1 [18.8 kB]
+Get:2 http://archive.ubuntu.com/ubuntu focal/main amd64 device-tree-compiler amd64 1.5.1-1 [247 kB]
+Fetched 265 kB in 1s (300 kB/s)
+Selecting previously unselected package libfdt1:amd64.
+(Reading database ... 41762 files and directories currently installed.)
+Preparing to unpack .../libfdt1_1.5.1-1_amd64.deb ...
+Unpacking libfdt1:amd64 (1.5.1-1) ...
+Selecting previously unselected package device-tree-compiler.
+Preparing to unpack .../device-tree-compiler_1.5.1-1_amd64.deb ...
+Unpacking device-tree-compiler (1.5.1-1) ...
+Setting up libfdt1:amd64 (1.5.1-1) ...
+Setting up device-tree-compiler (1.5.1-1) ...
+Processing triggers for man-db (2.9.1-1) ...
+Processing triggers for libc-bin (2.31-0ubuntu9) ...
+
+dash@DASH:~/petalinux/projects/wsltest/images/linux$ dtc -I dtb -O dts -o system.dts system.dtb
+system.dts: Warning (unit_address_vs_reg): /memory: node has a reg or ranges property, but no unit name
+---------------------------------------------------------------------------------------------------
+dash@DASH:~/petalinux/projects/wsltest$ petalinux-build
+[INFO] Sourcing buildtools
+[INFO] Building project
+[INFO] Sourcing build environment
+[INFO] Generating workspace directory
+INFO: bitbake petalinux-image-minimal
+NOTE: Started PRServer with DBfile: /home/dash/petalinux/projects/wsltest/build/cache/prserv.sqlite3, Address: 127.0.0.1:36377, PID: 1385
+Loading cache: 100% |########################################################################################################################| Time: 0:00:02
+Loaded 6495 entries from dependency cache.
+Parsing recipes: 100% |######################################################################################################################| Time: 0:00:01
+Parsing of 4461 .bb files complete (4459 cached, 2 parsed). 6497 targets, 627 skipped, 1 masked, 0 errors.
+NOTE: Resolving any missing task queue dependencies
+Initialising tasks: 100% |###################################################################################################################| Time: 0:00:08
+Checking sstate mirror object availability: 100% |###########################################################################################| Time: 0:00:16
+Sstate summary: Wanted 464 Local 11 Network 306 Missed 147 Current 1127 (68% match, 90% complete)
+NOTE: Executing Tasks
+NOTE: Tasks Summary: Attempted 4247 tasks of which 4243 didn't need to be rerun and all succeeded.
+INFO: Failed to copy built images to tftp dir: /tftpboot
+[INFO] Successfully built project
+---------------------------------------------------------------------------------------------------
+
+++++++++++++++++ Step 6: Check it runs on qemu
+dash@DASH:~/petalinux/projects/wsltest$ petalinux-boot --qemu --kernel
+# For connectivity WSL2 (host) to QEMU/Petalinux (guest)
+----petalinux-boot --qemu --kernel --qemu-args "-net nic,netdev=eth0 -netdev user,id=eth0,hostfwd=tcp::10022-:22"
+# The username and password should both be “root” ----> "petalinux"/"petalinux" then sudo passwd root ...
+
+PetaLinux 2022.2_release_S10071807 wsltest /dev/ttyPS0
+wsltest login: petalinux
+You are required to change your password immediately (administrator enforced).
+New password:
+Retype new password:
+wsltest:~$
+
+wsltest:~$ python
+Python 3.9.9 (main, Nov 15 2021, 18:05:17)
+[GCC 11.2.0] on linux
+Type "help", "copyright", "credits" or "license" for more information.
+
+>>> print "Hello world!" 
+# it's OK, not as SyntaxError: invalid character '“' (U+201C) or print(“Hello world!”)
+# To exit qemu press ctrl-A followed by X. ----> Use exit() or Ctrl-D (i.e. EOF) to exit
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+++++++++++++++++ Part 3 - Gitting involved
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+++++++++++++++++ Step 1: Build the project again, this time for an sdk.
+# build and package up all of the relevant files needed to build applications which can run on petalinux OS
+dash@DASH:~/petalinux/projects/wsltest$ petalinux-build --sdk
+[INFO] Sourcing buildtools
+[INFO] Building project
+[INFO] Sourcing build environment
+[INFO] Generating workspace directory
+INFO: bitbake petalinux-image-minimal -c do_populate_sdk
+NOTE: Started PRServer with DBfile: /home/dash/petalinux/projects/wsltest/build/cache/prserv.sqlite3, Address: 127.0.0.1:43825, PID: 990
+Loading cache: 100% |########################################################################################################################| Time: 0:00:02
+Loaded 6495 entries from dependency cache.
+Parsing recipes: 100% |######################################################################################################################| Time: 0:00:01
+Parsing of 4461 .bb files complete (4459 cached, 2 parsed). 6497 targets, 627 skipped, 1 masked, 0 errors.
+NOTE: Resolving any missing task queue dependencies
+Initialising tasks: 100% |###################################################################################################################| Time: 0:00:09
+Checking sstate mirror object availability: 100% |###########################################################################################| Time: 0:00:41
+Sstate summary: Wanted 992 Local 9 Network 605 Missed 378 Current 561 (61% match, 75% complete)
+NOTE: Executing Tasks
+NOTE: Tasks Summary: Attempted 4601 tasks of which 4202 didn't need to be rerun and all succeeded.
+[INFO] Copying SDK Installer...
+[INFO] Successfully built project
+---------------------------------------------------------------------------------------------------
+
+++++++++++++++++ Step 2: Package the sdk
+# This will package up the sdk into one convenient location such that we can transfer it to Windows and get developing.
+dash@DASH:~/petalinux/projects/wsltest$ petalinux-package --sysroot
+PetaLinux SDK installer version 2022.2
+======================================
+You are about to install the SDK to "/home/dash/petalinux/projects/wsltest/images/linux/sdk". Proceed [Y/n]? Y
+Extracting SDK.............................................................done
+Setting it up...done
+/home/dash/petalinux/projects/wsltest/images/linux/sdk/post-relocate-setup.sh: 16: export: Files/Common: bad variable name
+SDK has been successfully set up and is ready to be used.
+Each time you wish to use the SDK in a new shell session, you need to source the environment setup script e.g.
+ $ . /home/dash/petalinux/projects/wsltest/images/linux/sdk/environment-setup-cortexa9t2hf-neon-xilinx-linux-gnueabi
+---------------------------------------------------------------------------------------------------
+
+++++++++++++++++ Step 3: Ironing out the OS issues
+# The sdk is built with symbolic links to files, rather than the files themselves. When we put these on windows they will no longer work and our sdk will be broken.
+# The sdk exists on linux, which is a case-sensitive OS, wheras we want to develop on Windows, which is not case sensitive. The sdk has lots of files with the same name, but different case, e.g. libxt_CONNMARK.so and libxt_connmark.so. To make this slightly more annoying the lower case files appear to be the one’s we want (via file inspection) wheras the upper case files seem to be placeholders.
+# make a copy of this sdk subdirectory with symbolic links replaced with actual files, and no duplicates. Where duplicates exist we need to pick the one with the lower case rather than the upper case
+# we only need 2 of the folders from the overall sdk: usr and lib.
+
+cd ~/petalinux/projects/wsltest # [proj root]
+mkdir sdk
+cd sdk
+mkdir sysroots
+cd sysroots
+mkdir usr
+mkdir lib
+
+cd ~/petalinux/projects/wsltest # Make sure you’re in your project directory! [project name]
+sudo -S rm -rf sdk/sysroots/usr # Remove whatever may currently be in your sdk/usrdirectories
+sudo -S rm -rf sdk/sysroots/lib # and sdk/lib
+
+# sudo mc # !!! sudo if need delete something
+# sudo -S rm -rf sdk/sysroots.bak/''$'\r' # <---- /.
+
+# Copy the newly generated directories, replacing symbolic links with actual files
+# where [your cpu] cortexa9t2hf-neon-xilinx-linux-gnueabi or x86_64-petalinux-linux
+sudo cp -R -L images/linux/sdk/sysroots/cortexa9t2hf-neon-xilinx-linux-gnueabi/usr sdk/sysroots/
+sudo cp -R -L images/linux/sdk/sysroots/cortexa9t2hf-neon-xilinx-linux-gnueabi/lib sdk/sysroots/
+
+# Make a list of all of the duplicate files when sorting the contents of the sdk filder in reverse order (this will see the lowercase files first, thus the duplicates are the upper case files). For each of these duplicates remove the leading “.” character of the filepath and then append this list to the current contents of the gitignore file (which we will populate later).
+# Remove the duplicate lines and save that in a new file called .temp.
+# replace the gitignore file with the temp file
+
+find ./sdk/ | sort -f | tac | uniq -di | cut -c2- >> .gitignore
+sort .gitignore | uniq > .temp
+rm .gitignore
+mv .temp .gitignore
+
+# copy-plnx.sh - or the script sit in your project root, which you can simply run every time.
+# !!! DO THIS EVERY TIME YOU REBUILD AND REPACKAGE PETALINUX
+
+++++++++++++++++ Step 4: Copy the wrapper to the sdk directory
+# need the design wrapper for the project generation later down the line, copy it to sdk directory
+cp ~/Vivado/[your wrapper].xsa sdk # <---- /mnt/c/Work/Xilinx/xProjects/design_1_wrapper.xsa
+
+++++++++++++++++ Step 5: Actually create yourself a real gitignore
+# Edit to remove *.o in .gitignore,  may need to change the file permissions
+# should also edit the images/linux line to: /images/linux/sdk/
+sudo chmod a+w .gitignore
+
+++++++++++++++++ Step 6: Make the git repo
+# Initialized empty Git repository in /home/dash/petalinux/projects/wsltest/.git/
+dash@DASH:~/petalinux/projects/wsltest$ git init
+git add .gitignore
+git commit -m "Added gitignore to start"
+sudo git add -A
+sudo git commit -m "Added the project source files"
+
+---------------------------------------------------------------------------------------------------
+Using LazyGit for Linux and Sourcetree for Windows
+---------------------------------------------------------------------------------------------------
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+++++++++++++++++ Part 4 - Setting up the windows project
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+# There are 2 things to do here:
+- Make a “Platform project” based on our sdk, in Vitis.
+- Make an “Application project” based on our platform project, which will be the actual application.
+
+# only want our application source files to be under VC, so we’re going to aim for the following:
+- Application source files in a VC’d location
+- The sdk as a submodule in this location
+- A script that anyone can use to build the platform project and the application project from the source files and the sdk in whatever location they have their git repo’s stored.
+
+++++++++++++++++ Step 1: Create a git repo and clone it to your windows machine
+Quick setup — if you’ve done this kind of thing before https://github.com/botnursery/petalinux-wsl-app.git
+or	
+https://github.com/botnursery/petalinux-wsl-app.git
+Get started by creating a new file or uploading an existing file. We recommend every repository include a README, LICENSE, and .gitignore.
+…or create a new repository on the command line
+echo "# petalinux-wsl-app" >> README.md
+git init
+git add README.md
+git commit -m "first commit"
+git branch -M main
+git remote add origin https://github.com/botnursery/petalinux-wsl-app.git
+git push -u origin main
+…or push an existing repository from the command line
+git remote add origin https://github.com/botnursery/petalinux-wsl-app.git
+git branch -M master
+git push -u origin master
+# change branch name
+git branch -m main master
+git fetch origin
+git branch -u origin/master master
+git remote set-head origin -a
+
+++++++++++++++++ Step 2: Add your petalinux repo as a submodule
+$ git submodule add https://github.com/chaconinc/DbConnector
+
+++++++++++++++++ Step 3: Create a folder with your application firmware name, and a folder inside that called src
+C:\Work\GitHub\wslapp\wslapp_fw\src\helloworld.c
+
+++++++++++++++++ Step 4: Add some basic “hello world” code to your src folder
+#include <stdio.h>
+int main()
+{
+      printf("Hello World from EBAZ4205!");
+}
+
+++++++++++++++++ Step 5: Create a launch script, and a batch file to launch the launch script…
+# The tasks we need to complete with XCST commands via a .tcl script are as follows:
+- Set the Vitis workspace to the directory we’re in
+- Create the platform project with the correct settings
+- Add in the sysroot path and path to the boot images
+- Generate the platform project
+- Create the application project with the correct settings
+- Configure the application project to include the generated sysroot files
+- Configure some compiler lags
+- Configure the linker with the sysroot path
+# launch.bat will allow us to execute the generate_project.tcl script to build our project
+# with content C:\Work\Xilinx\Vitis\2022.2\bin\xsct.bat generate_project.tcl
+
+---------------------------------------------------------------------------------------------------
+This is a Tcl script designed to automate the process of creating a platform and an application project within the Xilinx Vitis environment (or a similar tool that uses XSCT commands). Let's break down each line:
+1.
+puts "[*] Configuring git repo begin"
+puts is a Tcl command that prints a string to the standard output.
+This line simply prints a message indicating the beginning of a section that might involve Git repository configuration (though the script itself doesn't directly interact with Git). The [*] is a common convention to highlight informational messages.
+2.
+set wsdir [exec pwd]
+set wsdir declares a Tcl variable named wsdir.
+[exec pwd] executes the operating system command pwd (print working directory) and captures its output.
+The output of pwd (the current working directory) is then assigned to the wsdir variable. This is a common way to dynamically get the current location of the script execution.
+3.
+setws {.}
+setws is likely a command specific to the Xilinx tool environment (like XSCT). It probably sets the current workspace to the specified path.
+{ . } represents the current directory. So, this line sets the workspace to the directory where the script is being executed.
+4.
+puts "[*] Setting workspace successful"
+Prints a message indicating that the workspace was set successfully.
+5.
+puts "[*] Creating platform"
+Prints a message indicating the start of platform creation.
+6.
+platform create -name "wsltest_platform" -hw $wsdir\\wsltest\\sdk\\design_1_wrapper.xsa -proc {ps7_cortexa9} -os {linux} -no-boot-bsp -out .
+platform create is an XSCT command to create a new hardware platform.
+-name "wsltest_platform": Specifies the name of the platform to be created.
+-hw $wsdir\\wsltest\\sdk\\design_1_wrapper.xsa: Specifies the hardware description file (XSA file) for the platform. The path uses the wsdir variable defined earlier and points to a file named design_1_wrapper.xsa located in the wsltest\sdk\ subdirectory. This XSA file contains information about the hardware architecture of your Xilinx device.
+-proc {ps7_cortexa9}: Specifies the processor(s) in the hardware platform. Here, it indicates a Cortex-A9 processor, likely from a Zynq-7000 series device. The curly braces {} are used to group the processor name.
+-os {linux}: Specifies the target operating system for this platform as Linux.
+-no-boot-bsp: Indicates that a default boot Board Support Package (BSP) should not be created during platform creation. You might intend to configure it manually later.
+-out .: Specifies that the platform files should be created in the current directory.
+7.
+puts "[*] Platform created successfully"
+Prints a confirmation message.
+8.
+platform write
+platform write is an XSCT command that saves the current platform configuration to disk.
+9.
+platform active wsltest_platform
+platform active sets the specified platform (wsltest_platform) as the currently active platform in the XSCT environment. Subsequent commands might operate on this active platform.
+10.
+domain config -sysroot $wsdir\\wsltest\\sdk\\sysroots
+domain config is an XSCT command used to configure a specific domain within the active platform. A domain typically represents a processor and its associated operating system.
+-sysroot $wsdir\\wsltest\\sdk\\sysroots: Configures the sysroot for the domain. The sysroot is a directory that contains the root file system and necessary libraries for cross-compiling applications for the target system.
+11.
+domain config -bif output.bif
+-bif output.bif: Configures the Boot Image Format (BIF) file for the domain. The BIF file specifies how the boot image (containing the FSBL, PMU firmware, bitstream, etc.) should be created.
+12.
+domain config -boot $wsdir\\wsltest\\images\\linux
+-boot $wsdir\\wsltest\\images\\linux: This command is likely intended to specify the directory containing the boot files (like the kernel, device tree, etc.). However, as you encountered before, the -boot option might also be deprecated or have a specific context. It's often related to the boot image creation process.
+13.
+domain config -image $wsdir\\wsltest\\images\\linux
+-image $wsdir\\wsltest\\images\\linux: As highlighted in your previous question, the -image option is deprecated. It likely served a similar purpose to -boot or -sd-dir, pointing to the directory containing boot-related files. The recommended replacement is -sd-dir.
+14.
+puts "[*] Platform configured"
+Indicates that the platform configuration steps are complete.
+15.
+platform write
+Saves the updated platform configuration to disk.
+16.
+puts "[*] Generating..."
+Indicates the start of the platform generation process.
+17.
+platform generate
+platform generate is an XSCT command that generates the necessary files and directories for the platform, including the BSP (if configured), device tree sources, and other platform-specific components.
+18.
+platform -make-local
+-make-local is likely an option for the platform command that makes the generated platform files local to the current project, rather than potentially using a shared or installed version.
+19.
+puts "[*] Platform generated successfully"
+Confirmation message.
+20.
+puts "[*] Creating app project"
+Indicates the start of application project creation.
+21.
+app create -name wslapp_fw -platform wsltest_platform -domain linux_domain -os linux -template {Linux Empty Application}
+app create is an XSCT command to create a new application project.
+-name wslapp_fw: Specifies the name of the application project.
+-platform wsltest_platform: Specifies the platform this application will target (the one created earlier).
+-domain linux_domain: Specifies the software domain within the platform that this application will run on. The domain name linux_domain is typically derived from the operating system specified during platform creation.
+-os linux: Specifies the operating system for the application (Linux).
+-template {Linux Empty Application}: Specifies the template to use for creating the application. This will create a basic empty application structure for Linux.
+22.
+puts "[*] Configuring..."
+Indicates the start of application configuration.
+23.
+app config -name wslapp_fw -set compiler-misc {-c -fmessage-length=0 -MT"$@"
+app config is used to configure the application project.
+-name wslapp_fw: Specifies the application to configure.
+-set compiler-misc {...}: Sets miscellaneous compiler options. The options provided are:
+-c: Compile only, do not link.
+-fmessage-length=0: Print complete file names and line numbers in diagnostics.
+-MT"$@": Sets the target of the rule for makefile dependency generation.
+24.
+app config -name wslapp_fw -add include-path $wsdir\\wsltest\\sdk\\sysroots\\usr\\include
+-add include-path: Adds a directory to the compiler's include path. This allows the compiler to find header files located in the specified sysroot.
+25.
+app config -name wslapp_fw -add library-search-path $wsdir\\wsltest\\sdk\\sysroots\\usr\\lib
+-add library-search-path: Adds a directory to the linker's library search path. This allows the linker to find libraries located in the specified sysroot.
+26.
+app config -name wslapp_fw -add library-search-path $wsdir\\wsltest\\sdk\\sysroots\\lib
+Adds another library search path from the sysroot.
+27.
+app config -name wslapp_fw -add linker-misc --sysroot=$wsdir\\wsltest\\sdk\\sysroots
+-add linker-misc: Adds miscellaneous linker options.
+--sysroot=$wsdir\\wsltest\\sdk\\sysroots: Specifies the sysroot for the linker, ensuring it links against the correct libraries for the target system.
+28.
+puts "[*] Application configured"
+Confirmation message.
+29.
+puts "[*] Complete! Thankyou for flying with ThomCousGit, we hope to see you again soon."
+A personalized completion message.
+30.
+puts "Press Enter to quit."
+Prompts the user to press Enter to exit the script.
+31.
+gets stdin
+gets stdin reads a line of input from the standard input (the user pressing Enter in this case). This keeps the script window open until the user explicitly closes it.
+
+In summary, this script automates the creation of a Vitis platform for a Zynq-7000 (Cortex-A9) based system targeting Linux, followed by the creation and basic configuration of an empty Linux application project for that platform. It sets up the necessary paths and configurations for cross-compilation against a specified sysroot. Remember to replace the placeholder paths ($wsdir\\wsltest\\sdk\\..., $wsdir\\wsltest\\images\\linux) with the actual paths in your environment. You should also update the domain config -boot and -image lines to use the recommended -sd-dir option as discussed previously.
+---------------------------------------------------------------------------------------------------
+
+++++++++++++++++ Step 6: Create the bif file to generate project
+# C:\Work\Xilinx\xProjects\project_zynq7000_ebaz4205\project_zynq7000_ebaz4205.sdk\hi\bootimage\hi.bif
+# new for petalinux ---> output.bif
+
+//arch = zynq; split = false; format = BIN
+the_ROM_image:
+{
+	[bootloader]C:\Work\Xilinx\Workspaces\EBAZ4205_workspace\images\zynq_fsbl.elf
+	[destination_device = pl] C:\Work\Xilinx\Workspaces\EBAZ4205_workspace\images\design_1_wrapper.bit
+	C:\Work\Xilinx\Workspaces\EBAZ4205_workspace\images\u-boot.elf
+	C:\Work\Xilinx\Workspaces\EBAZ4205_workspace\images\image.ub
+}
+
+++++++++++++++++ Step 7: Generate the project
+# Run the launch.bat file (240 character path limit)
+
+Vivado% cd C:\\Work\\GitHub\\wslapp
+C:\\Work\\Xilinx\\Vitis\\2022.2\\bin\\xsct.bat generate_project.tcl
+........
+xsct% platform write
+Successfully saved  the platform at "C:/Work/GitHub/wslapp/wsltest_platform/platform.spr"
+xsct% platform generate
+........
+
+++++++++++++++++ Step 8: Open the vitis project
+# Start vitis and when prompted to select a workspace, navigate to your repository, navigate to that project and click build
